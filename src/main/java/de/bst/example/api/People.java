@@ -1,5 +1,7 @@
 package de.bst.example.api;
 
+import javax.validation.constraints.Pattern;
+
 import org.immutables.value.Value;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -12,8 +14,9 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 public interface People {
 
 	String id();
-	
+
+	@Pattern(regexp = "\\w")
 	String name();
-	
+
 	Long age();
 }

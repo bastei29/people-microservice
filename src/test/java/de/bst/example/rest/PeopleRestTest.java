@@ -43,7 +43,7 @@ public class PeopleRestTest {
 		Mockito.when(peopleService.findBy(Mockito.anyString()))
 				.thenReturn(ImmutablePeople.builder().age(11L).id(ID).name("Bastian").build());
 		MockMvc mockMvc = MockMvcBuilders.standaloneSetup(peopleRest).build();
-		RequestBuilder request = MockMvcRequestBuilders.get(PeopleRest.GET_PEOPLE, ID);
+		RequestBuilder request = MockMvcRequestBuilders.get(PeopleRest.URL_PEOPLE_W_ID, ID);
 
 		// When
 		response = mockMvc.perform(request);
