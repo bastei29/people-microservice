@@ -1,0 +1,29 @@
+[[resources]]
+= Resources
+
+[[resources-people]]
+== People
+
+The peoples provides the entry point into the service.
+
+[[resources-people-get]]
+=== GET
+==== Response structure 
+include::{snippets}/get-people/response-fields.adoc[]
+
+==== Example request
+include::{snippets}/get-people/http-request.adoc[]
+
+==== Example response
+include::{snippets}/get-people/http-response.adoc[]
+
+[[resources-people-post]]
+=== POST
+==== Request structure 
+include::{snippets}/post-people/request-fields.adoc[]
+
+==== Example request
+include::{snippets}/post-people/http-request.adoc[]
+
+==== Example response
+include::{snippets}/post-people/http-response.adoc[]
