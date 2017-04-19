@@ -32,6 +32,11 @@
 				<artifactId>value</artifactId>
 				<version>2.4.4</version>
 			</dependency>
+			<dependency>
+				<groupId>com.rometools</groupId>
+				<artifactId>rome</artifactId>
+				<version>1.7.2</version>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 
@@ -59,6 +64,21 @@
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-validator</artifactId>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.rometools</groupId>
+			<artifactId>rome</artifactId>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.datatype</groupId>
+			<artifactId>jackson-datatype-jdk8</artifactId>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.datatype</groupId>
+			<artifactId>jackson-datatype-jsr310</artifactId>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>

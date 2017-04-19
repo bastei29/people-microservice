@@ -58,33 +58,31 @@ public class PeopleRestMockMvcTest {
 	public void setUp() throws Exception {
 
 		this.mockMvc = MockMvcBuilders.webAppContextSetup(this.context).apply(springSecurity())
-				.apply(documentationConfiguration(this.restDocumentation)).alwaysDo(document("{method-name}/{step}/"))
-				.build();
+				.apply(documentationConfiguration(this.restDocumentation)).alwaysDo(document("{method-name}/{step}/")).build();
 
 		// Given
-		Mockito.when(peopleService.findBy(Mockito.eq(ID)))
-				.thenReturn(ImmutablePeople.builder().age(11L).id(ID).name("Bastian").build());
-		Mockito.when(peopleService.findBy(Mockito.eq(ID_NOT_FOUND)))
-				.thenThrow(new NotFoundException("Id nicht gefunden"));
+		Mockito.when(peopleService.findBy(Mockito.eq(ID))).thenReturn(ImmutablePeople.builder().age(11L).id(ID).name("Bastian").build());
+		Mockito.when(peopleService.findBy(Mockito.eq(ID_NOT_FOUND))).thenThrow(new NotFoundException("Id nicht gefunden"));
 	}
 
 	@Test
 	public void test_get_people_http_200() throws Exception {
 		// When - Then
-		mockMvc.perform(get(PeopleRest.URL_PEOPLE_W_ID, ID).with(httpBasic("user", "password")))
-				.andExpect(status().isOk())
-				.andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON_VALUE))
+		mockMvc.perform(get(PeopleRest.URL_PEOPLE_W_ID, ID).with(httpBasic("user", "password")).accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk()).andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON_VALUE))
 				.andExpect(content().json("{\"name\":\"Bastian\",\"age\":11,\"id\":\"" + ID + "\"}", false))
 				.andDo(document("get-people",
 						responseFields(fieldWithPath("id").description("The id of the people"),
 								fieldWithPath("name").description("The name of the people"),
-								fieldWithPath("age").description("The age of the people"))));
+								fieldWithPath("age").description("The age of the people"),
+								fieldWithPath("created").description("The creation timestamp of the people"))));
 	}
 
 	@Test
 	public void test_get_people_http_404() throws Exception {
 		// When - Then
-		mockMvc.perform(get(PeopleRest.URL_PEOPLE_W_ID, ID_NOT_FOUND).with(httpBasic("user", "password")))
+		mockMvc.perform(
+				get(PeopleRest.URL_PEOPLE_W_ID, ID_NOT_FOUND).with(httpBasic("user", "password")).accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isNotFound());
 	}
 
@@ -97,13 +95,12 @@ public class PeopleRestMockMvcTest {
 	@Test
 	public void test_post_people_http_201() throws Exception {
 		// Given
-		String id = UUID.randomUUID().toString();
-		String newPeople = "{\"id\":\"%s\",\"name\":\"Neuer\",\"age\":1}";
+		final String id = UUID.randomUUID().toString();
+		final String newPeople = "{\"id\":\"%s\",\"name\":\"Neuer\",\"age\":1}";
 
 		// When - Then
-		mockMvc.perform(post(PeopleRest.URL_PEOPLE).with(httpBasic("user", "password"))
-				.content(String.format(newPeople, id)).contentType(MediaType.APPLICATION_JSON))
-				.andExpect(status().isCreated())
+		mockMvc.perform(post(PeopleRest.URL_PEOPLE).with(httpBasic("user", "password")).content(String.format(newPeople, id))
+				.contentType(MediaType.APPLICATION_JSON)).andExpect(status().isCreated())
 				.andExpect(header().string("Location", PeopleRest.URL_PEOPLE_W_ID.replace("{id}", id)))
 				.andDo(document("post-people",
 						requestFields(fieldWithPath("id").description("The id of the people"),
@@ -114,13 +111,12 @@ public class PeopleRestMockMvcTest {
 	@Test
 	public void test_post_people_http_400() throws Exception {
 		// Given
-		String id = UUID.randomUUID().toString();
-		String newPeople = "{\"id\":\"%s\",\"name\":\"212dsf3\"}";
+		final String id = UUID.randomUUID().toString();
+		final String newPeople = "{\"id\":\"%s\",\"name\":\"212dsf3\"}";
 
 		// When - Then
-		mockMvc.perform(post(PeopleRest.URL_PEOPLE).with(httpBasic("user", "password"))
-				.content(String.format(newPeople, id)).contentType(MediaType.APPLICATION_JSON))
-				.andExpect(status().isBadRequest());
+		mockMvc.perform(post(PeopleRest.URL_PEOPLE).with(httpBasic("user", "password")).content(String.format(newPeople, id))
+				.contentType(MediaType.APPLICATION_JSON)).andExpect(status().isBadRequest());
 	}
 
 	@Test

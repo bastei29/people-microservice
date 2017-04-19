@@ -42,8 +42,8 @@ public class PeopleRestTest {
 		// Given
 		Mockito.when(peopleService.findBy(Mockito.anyString()))
 				.thenReturn(ImmutablePeople.builder().age(11L).id(ID).name("Bastian").build());
-		MockMvc mockMvc = MockMvcBuilders.standaloneSetup(peopleRest).build();
-		RequestBuilder request = MockMvcRequestBuilders.get(PeopleRest.URL_PEOPLE_W_ID, ID);
+		final MockMvc mockMvc = MockMvcBuilders.standaloneSetup(peopleRest).build();
+		final RequestBuilder request = MockMvcRequestBuilders.get(PeopleRest.URL_PEOPLE_W_ID, ID).accept(MediaType.APPLICATION_JSON);
 
 		// When
 		response = mockMvc.perform(request);
@@ -64,7 +64,6 @@ public class PeopleRestTest {
 	@Test
 	public void test_get_people_http_content() throws Exception {
 		// Then
-		response.andExpect(
-				MockMvcResultMatchers.content().json("{\"name\":\"Bastian\",\"age\":11,\"id\":\"" + ID + "\"}", false));
+		response.andExpect(MockMvcResultMatchers.content().json("{\"name\":\"Bastian\",\"age\":11,\"id\":\"" + ID + "\"}", false));
 	}
 }

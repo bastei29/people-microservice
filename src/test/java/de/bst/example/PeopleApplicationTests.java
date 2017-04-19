@@ -3,6 +3,7 @@ package de.bst.example;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.net.URI;
+import java.time.Instant;
 import java.util.Map;
 import java.util.UUID;
 
@@ -34,15 +35,15 @@ public class PeopleApplicationTests {
 		this.restTemplate = this.restTemplate.withBasicAuth("user", "password");
 	}
 
-	@Sql(statements = "insert into People_Entity(id,name,age) values('abc-123','Test',10)")
+	@Sql(statements = "insert into People_Entity(id,name,age,created) values('abc-123','Test',10,'2017-04-19 12:23:44')")
 	@Test
 	public void test_people_endpoint_get_200() {
 		// Given
-		String id = "abc-123";
-		People people = ImmutablePeople.builder().id(id).name("Test").age(10L).build();
+		final String id = "abc-123";
+		final People people = ImmutablePeople.builder().id(id).name("Test").age(10L).created(Instant.parse("2017-04-19T10:23:44Z")).build();
 
 		// When
-		People entity = this.restTemplate.getForObject(PeopleRest.URL_PEOPLE_W_ID, People.class, id);
+		final People entity = this.restTemplate.getForObject(PeopleRest.URL_PEOPLE_W_ID, People.class, id);
 
 		// Then
 		assertThat(entity).isEqualTo(people);
@@ -51,11 +52,11 @@ public class PeopleApplicationTests {
 	@Test
 	public void test_people_endpoint_post_201() {
 		// Given
-		String id = UUID.randomUUID().toString();
-		People people = ImmutablePeople.builder().id(id).name("Test").age(10L).build();
+		final String id = UUID.randomUUID().toString();
+		final People people = ImmutablePeople.builder().id(id).name("Test").age(10L).build();
 
 		// When
-		URI location = this.restTemplate.postForLocation(PeopleRest.URL_PEOPLE, people);
+		final URI location = this.restTemplate.postForLocation(PeopleRest.URL_PEOPLE, people);
 
 		// Then
 		assertThat(location).isEqualTo(URI.create(PeopleRest.URL_PEOPLE_W_ID.replace("{id}", id)));
@@ -65,7 +66,7 @@ public class PeopleApplicationTests {
 	public void test_info_endpoint_get_200() {
 		// When
 		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> entity = this.restTemplate.getForEntity("/info", Map.class);
+		final ResponseEntity<Map> entity = this.restTemplate.getForEntity("/info", Map.class);
 
 		// Then
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -75,7 +76,7 @@ public class PeopleApplicationTests {
 	public void test_health_endpoint_get_200() {
 		// When
 		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> entity = this.restTemplate.getForEntity("/health", Map.class);
+		final ResponseEntity<Map> entity = this.restTemplate.getForEntity("/health", Map.class);
 
 		// Then
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -85,7 +86,7 @@ public class PeopleApplicationTests {
 	public void test_metrics_endpoint_get_200() {
 		// When
 		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> entity = this.restTemplate.getForEntity("/metrics", Map.class);
+		final ResponseEntity<Map> entity = this.restTemplate.getForEntity("/metrics", Map.class);
 
 		// Then
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);

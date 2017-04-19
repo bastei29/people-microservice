@@ -1,6 +1,7 @@
 package de.bst.example.rest;
 
 import java.net.URI;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.ModelAndView;
 
 import de.bst.example.api.People;
 import de.bst.example.service.NotFoundException;
@@ -28,18 +30,34 @@ public class PeopleRest {
 	private PeopleService peopleService;
 
 	@GetMapping(value = URL_PEOPLE_W_ID, produces = MediaType.APPLICATION_JSON_VALUE)
-	public People people(@PathVariable String id) {
+	public People peopleGet(@PathVariable String id) {
 		return peopleService.findBy(id);
 	}
 
+	@GetMapping(value = URL_PEOPLE_W_ID, produces = MediaType.APPLICATION_ATOM_XML_VALUE)
+	public ModelAndView peopleSingleFeed(@PathVariable String id) {
+		return createFeedView(peopleService.findAsListBy(id));
+	}
+
 	@PostMapping(value = URL_PEOPLE, consumes = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<?> people_post(@RequestBody People people) {
+	public ResponseEntity<?> peoplePost(@RequestBody People people) {
 		peopleService.add(people);
 		return ResponseEntity.created(URI.create(URL_PEOPLE_W_ID.replace("{id}", people.id()))).build();
+	}
+
+	@GetMapping(value = URL_PEOPLE, produces = MediaType.APPLICATION_ATOM_XML_VALUE)
+	public ModelAndView peopleFeed() {
+		return createFeedView(peopleService.findAll());
 	}
 
 	@ResponseStatus(value = HttpStatus.NOT_FOUND, reason = "Nicht gefunden")
 	@ExceptionHandler(NotFoundException.class)
 	public void notFound() {
+	}
+
+	private ModelAndView createFeedView(List<People> entries) {
+		final ModelAndView mav = new ModelAndView();
+		mav.addObject("people-feed", entries);
+		return mav;
 	}
 }
