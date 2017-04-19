@@ -1,6 +1,7 @@
 package de.bst.example.api;
 
 import java.time.Instant;
+import java.util.UUID;
 
 import javax.validation.constraints.Pattern;
 
@@ -15,7 +16,9 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 @Value.Style(defaultAsDefault = true, jdkOnly = true)
 public interface People {
 
-	String id();
+	default String id() {
+		return UUID.randomUUID().toString();
+	}
 
 	@Pattern(regexp = "\\w")
 	String name();
