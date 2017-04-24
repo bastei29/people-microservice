@@ -5,26 +5,14 @@ import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import de.bst.example.api.ImmutablePeople;
 import de.bst.example.api.People;
 
-// @formatter:off
 @Entity
-@NamedQueries({
-	@NamedQuery(name = PeopleEntity.FIND_ALL, query = "FROM PeopleEntity"),
-	@NamedQuery(name = PeopleEntity.FIND_BY_ID, query = "FROM PeopleEntity WHERE id=:" + PeopleEntity.PARAM_ID)
-})
-// @formatter:on
 public class PeopleEntity {
-
-	public static final String FIND_ALL = "findAll";
-	public static final String FIND_BY_ID = "findById";
-	public static final String PARAM_ID = "id";
 
 	@Id
 	private String id;

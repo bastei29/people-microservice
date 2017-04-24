@@ -47,7 +47,7 @@ public class PeopleRest {
 		return createFeedView();
 	}
 
-	@ResponseStatus(value = HttpStatus.NOT_FOUND)
+	@ResponseStatus(value = HttpStatus.NOT_FOUND, reason = "nicht gefunden")
 	@ExceptionHandler(NotFoundException.class)
 	public void notFound() {
 	}
