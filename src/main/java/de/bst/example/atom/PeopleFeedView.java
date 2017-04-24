@@ -1,5 +1,6 @@
 package de.bst.example.atom;
 
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -8,6 +9,9 @@ import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
 
 import org.springframework.http.MediaType;
 import org.springframework.web.servlet.view.feed.AbstractAtomFeedView;
@@ -20,6 +24,8 @@ import com.rometools.rome.feed.atom.Link;
 import de.bst.example.api.People;
 
 public class PeopleFeedView extends AbstractAtomFeedView {
+
+	private JAXBContext jaxbContext;
 
 	@Override
 	protected void buildFeedMetadata(Map<String, Object> model, Feed feed, HttpServletRequest request) {
@@ -52,8 +58,7 @@ public class PeopleFeedView extends AbstractAtomFeedView {
 				links.add(link);
 				entry.setAlternateLinks(links);
 				final Content content = new Content();
-				// TODO XML machen statt json
-				content.setValue(people.toString());
+				content.setValue(createXml(people));
 				entry.setSummary(content);
 				entries.add(entry);
 			}
@@ -61,5 +66,21 @@ public class PeopleFeedView extends AbstractAtomFeedView {
 			throw new RuntimeException("Mandatory object 'people-feed' not provided.");
 		}
 		return entries;
+	}
+
+	private String createXml(People people) throws JAXBException {
+		final StringWriter asString = new StringWriter();
+		this.createMarshaller().marshal(new PeopleFeedItem(people), asString);
+		return asString.toString();
+	}
+
+	private Marshaller createMarshaller() throws JAXBException {
+		if (this.jaxbContext == null) {
+			this.jaxbContext = JAXBContext.newInstance(PeopleFeedItem.class);
+		}
+
+		final Marshaller marshaller = this.jaxbContext.createMarshaller();
+		marshaller.setProperty(Marshaller.JAXB_FRAGMENT, Boolean.TRUE);
+		return marshaller;
 	}
 }
