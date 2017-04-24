@@ -39,6 +39,10 @@ public class PeopleEntity {
 	@Column(nullable = false)
 	private Date created;
 
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(nullable = false)
+	private Date updated;
+
 	public PeopleEntity() {
 	}
 
@@ -47,6 +51,7 @@ public class PeopleEntity {
 		name = people.name();
 		age = people.age();
 		created = Date.from(people.created());
+		updated = Date.from(people.created());
 	}
 
 	public People asObject() {

@@ -35,7 +35,8 @@ public class PeopleApplicationTests {
 		this.restTemplate = this.restTemplate.withBasicAuth("user", "password");
 	}
 
-	@Sql(statements = "insert into People_Entity(id,name,age,created) values('abc-123','Test',10,'2017-04-19 12:23:44')")
+	@Sql(
+			statements = "insert into People_Entity(id,name,age,created,updated) values('abc-123','Test',10,'2017-04-19 12:23:44','2017-04-19 12:23:44')")
 	@Test
 	public void test_people_endpoint_get_200() {
 		// Given

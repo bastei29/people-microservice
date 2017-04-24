@@ -22,6 +22,9 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import de.bst.example.api.ImmutablePeople;
 import de.bst.example.service.PeopleService;
 
+/**
+ * Alternative Implementierung zu {@code PeopleRestMockMvcTest}
+ */
 @RunWith(SpringRunner.class)
 public class PeopleRestTest {
 

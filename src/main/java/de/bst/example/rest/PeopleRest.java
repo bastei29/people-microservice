@@ -1,7 +1,9 @@
 package de.bst.example.rest;
 
+import static de.bst.example.PeopleApplication.FEED_PEOPLE_LIST;
+import static de.bst.example.PeopleApplication.FEED_PEOPLE_UPDATED;
+
 import java.net.URI;
-import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -34,11 +36,6 @@ public class PeopleRest {
 		return peopleService.findBy(id);
 	}
 
-	@GetMapping(value = URL_PEOPLE_W_ID, produces = MediaType.APPLICATION_ATOM_XML_VALUE)
-	public ModelAndView peopleSingleFeed(@PathVariable String id) {
-		return createFeedView(peopleService.findAsListBy(id));
-	}
-
 	@PostMapping(value = URL_PEOPLE, consumes = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<?> peoplePost(@RequestBody People people) {
 		peopleService.add(people);
@@ -47,17 +44,18 @@ public class PeopleRest {
 
 	@GetMapping(value = URL_PEOPLE, produces = MediaType.APPLICATION_ATOM_XML_VALUE)
 	public ModelAndView peopleFeed() {
-		return createFeedView(peopleService.findAll());
+		return createFeedView();
 	}
 
-	@ResponseStatus(value = HttpStatus.NOT_FOUND, reason = "Nicht gefunden")
+	@ResponseStatus(value = HttpStatus.NOT_FOUND)
 	@ExceptionHandler(NotFoundException.class)
 	public void notFound() {
 	}
 
-	private ModelAndView createFeedView(List<People> entries) {
+	private ModelAndView createFeedView() {
 		final ModelAndView mav = new ModelAndView();
-		mav.addObject("people-feed", entries);
+		mav.addObject(FEED_PEOPLE_LIST, peopleService.findAll());
+		mav.addObject(FEED_PEOPLE_UPDATED, peopleService.lastUpdate());
 		return mav;
 	}
 }

@@ -1,17 +1,17 @@
 package de.bst.example.atom;
 
-import java.io.StringWriter;
+import static de.bst.example.PeopleApplication.FEED_PEOPLE_LIST;
+import static de.bst.example.PeopleApplication.FEED_PEOPLE_UPDATED;
+
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
+import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
 
 import org.springframework.http.MediaType;
 import org.springframework.web.servlet.view.feed.AbstractAtomFeedView;
@@ -25,11 +25,9 @@ import de.bst.example.api.People;
 
 public class PeopleFeedView extends AbstractAtomFeedView {
 
-	private JAXBContext jaxbContext;
-
 	@Override
 	protected void buildFeedMetadata(Map<String, Object> model, Feed feed, HttpServletRequest request) {
-		feed.setId(UUID.randomUUID().toString());
+		feed.setId(request.getRequestURL().toString());
 		feed.setTitle("People Feed");
 		final List<Link> links = new ArrayList<>();
 		final Link link = new Link();
@@ -37,50 +35,42 @@ public class PeopleFeedView extends AbstractAtomFeedView {
 		link.setType(MediaType.APPLICATION_ATOM_XML_VALUE);
 		links.add(link);
 		feed.setAlternateLinks(links);
+		feed.setUpdated(typedGet(model.get(FEED_PEOPLE_UPDATED), Date.class));
 	}
 
 	@Override
 	protected List<Entry> buildFeedEntries(Map<String, Object> model, HttpServletRequest request, HttpServletResponse response)
 			throws Exception {
 		final List<Entry> entries = new ArrayList<>();
-		final Object ob = model.get("people-feed");
-		if (ob instanceof List) {
-			for (int i = 0; i < ((List<?>) ob).size(); i++) {
-				final Object feedObj = ((List<?>) ob).get(i);
-				final People people = (People) feedObj;
-				final Entry entry = new Entry();
-				entry.setId(people.id());
-				entry.setPublished(Date.from(people.created()));
-				final List<Link> links = new ArrayList<>();
-				final Link link = new Link();
-				link.setHref(request.getRequestURL().toString() + "/" + people.id());
-				link.setType(MediaType.APPLICATION_ATOM_XML_VALUE);
-				links.add(link);
-				entry.setAlternateLinks(links);
-				final Content content = new Content();
-				content.setValue(createXml(people));
-				entry.setSummary(content);
-				entries.add(entry);
-			}
-		} else {
-			throw new RuntimeException("Mandatory object 'people-feed' not provided.");
+		for (final People people : typedListGet(model.get(FEED_PEOPLE_LIST), People.class)) {
+			final Entry entry = new Entry();
+			entry.setId(people.id());
+			entry.setPublished(Date.from(people.created()));
+			entry.setCreated(Date.from(people.created()));
+			final List<Link> links = new ArrayList<>();
+			final Link link = new Link();
+			link.setHref(request.getRequestURL().toString() + "/" + people.id());
+			link.setType(MediaType.APPLICATION_ATOM_XML_VALUE);
+			links.add(link);
+			entry.setAlternateLinks(links);
+			final Content content = new Content();
+			content.setSrc(request.getRequestURL().toString() + "/" + people.id());
+			content.setType(MediaType.APPLICATION_JSON_VALUE);
+			entry.setContents(Arrays.asList(content));
+			final Content summary = new Content();
+			summary.setValue("This is people " + people.id());
+			entry.setSummary(summary);
+			entries.add(entry);
 		}
 		return entries;
 	}
 
-	private String createXml(People people) throws JAXBException {
-		final StringWriter asString = new StringWriter();
-		this.createMarshaller().marshal(new PeopleFeedItem(people), asString);
-		return asString.toString();
+	private <T> T typedGet(Object object, Class<T> clazz) {
+		return Optional.ofNullable(object).map(clazz::cast).orElse(null);
 	}
 
-	private Marshaller createMarshaller() throws JAXBException {
-		if (this.jaxbContext == null) {
-			this.jaxbContext = JAXBContext.newInstance(PeopleFeedItem.class);
-		}
-
-		final Marshaller marshaller = this.jaxbContext.createMarshaller();
-		marshaller.setProperty(Marshaller.JAXB_FRAGMENT, Boolean.TRUE);
-		return marshaller;
+	@SuppressWarnings("unchecked")
+	private <T> List<T> typedListGet(Object object, Class<T> clazz) {
+		return Optional.ofNullable(object).map(List.class::cast).orElse(null);
 	}
 }

@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -91,6 +92,17 @@ public class PeopleServiceTest {
 		// Then
 		assertThat(peoples.size()).isEqualTo(1);
 		assertThat(peoples.get(0)).isEqualTo(data);
+	}
+
+	@Test
+	public void test_lastUpdate_people() {
+		createTestdata();
+
+		// When
+		final Date update = peopleService.lastUpdate();
+
+		// Then
+		assertThat(update).isCloseTo(new Date(), 2000);
 	}
 
 	private People createTestdata() {

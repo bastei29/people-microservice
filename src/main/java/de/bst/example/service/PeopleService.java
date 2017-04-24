@@ -1,5 +1,6 @@
 package de.bst.example.service;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -36,5 +37,9 @@ public class PeopleService {
 	public List<People> findAsListBy(String id) {
 		return StreamSupport.stream(peopleRepository.findAll().spliterator(), false).map(PeopleEntity::asObject)
 				.collect(Collectors.toList());
+	}
+
+	public Date lastUpdate() {
+		return peopleRepository.lastUpdate();
 	}
 }
