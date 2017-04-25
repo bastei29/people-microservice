@@ -3,7 +3,8 @@ package de.bst.example;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.net.URI;
-import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Map;
 import java.util.UUID;
 
@@ -41,7 +42,8 @@ public class PeopleApplicationTest {
 	public void test_people_endpoint_get_200() {
 		// Given
 		final String id = "abc-123";
-		final People people = ImmutablePeople.builder().id(id).name("Test").age(10L).created(Instant.parse("2017-04-19T10:23:44Z")).build();
+		final People people = ImmutablePeople.builder().id(id).name("Test").age(10L)
+				.created(ZonedDateTime.of(2017, 4, 19, 12, 23, 44, 0, ZoneId.systemDefault()).toInstant()).build();
 
 		// When
 		final People entity = this.restTemplate.getForObject(PeopleRest.URL_PEOPLE_W_ID, People.class, id);
