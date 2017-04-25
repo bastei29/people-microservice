@@ -25,7 +25,7 @@ import de.bst.example.rest.PeopleRest;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-public class PeopleApplicationTests {
+public class PeopleApplicationTest {
 
 	@Autowired
 	private TestRestTemplate restTemplate;
