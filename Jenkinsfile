@@ -1,10 +1,10 @@
 node {
-	def mvnHome = tool 'maven-3'
+	def mvnHome = tool 'maven-3.3.9'
 
 	stage('Checkout') { 
         checkout scm
     }
-    
+
     stage('Build') { 
         sh "${mvnHome}/bin/mvn -f pom.xml clean package -U -DskipTests"
     }
@@ -19,8 +19,19 @@ node {
     }
     
     stage('Deploy'){
-    	sh "ssh docker@192.168.1.43 docker run --rm -e -p 8080:8080 -t people"
+    	def sshPrefix = "ssh docker@dockerhost"
+    	sh "${sshPrefix} docker stop ${pomArtifactId()}; ${sshPrefix} docker run --rm --name ${pomArtifactId()} -d -p 8080:8080 dockerhost:8082/${pomArtifactId()}:${pomVersion()}"
     }
+}
+
+def pomVersion() {
+    def matcher = readFile('pom.xml') =~ '<version>(.+)</version>'
+    matcher ? matcher[0][1] : null
+}
+
+def pomArtifactId() {
+    def matcher = readFile('pom.xml') =~ '<artifactId>(.+)</artifactId>'
+    matcher ? matcher[0][1] : null
 }
 
 
