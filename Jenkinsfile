@@ -15,11 +15,10 @@ node {
     }
     
     stage('Dockerize'){
-    	sh "${mvnHome}/bin/mvn -f pom.xml docker:build"
+    	sh "${mvnHome}/bin/mvn -f pom.xml docker:build -DpushImage"
     }
     
     stage('Deploy'){
-    	sh "scp target/people.jar docker@192.168.1.43:/tmp"
     	sh "ssh docker@192.168.1.43 docker run --rm -e -p 8080:8080 -t people"
     }
 }

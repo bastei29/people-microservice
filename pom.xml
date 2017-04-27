@@ -139,7 +139,7 @@
 				<executions>
 					<execution>
 						<id>generate-docs</id>
-						<phase>package</phase>
+						<phase>prepare-package</phase>
 						<goals>
 							<goal>process-asciidoc</goal>
 						</goals>
@@ -150,7 +150,7 @@
 								<snippets>${folder.api-docs}</snippets>
 							</attributes>
 							<sourceDirectory>src/docs/asciidocs</sourceDirectory>
-							<outputDirectory>target/generated-docs</outputDirectory>
+							<outputDirectory>target/classes/static</outputDirectory>
 						</configuration>
 					</execution>
 				</executions>

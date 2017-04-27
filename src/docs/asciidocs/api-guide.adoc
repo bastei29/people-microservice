@@ -1,29 +1,96 @@
-[[resources]]
-= Resources
+= People-service 
+Bastian Steinbach;
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 4
+:sectlinks:
+
+[introduction]
+= Introduction
+
+People-service is a RESTful microservice for experimental usage.
+
+[[overview]]
+= Overview
+
+[[overview-http-verbs]]
+== HTTP verbs
+People-service tries to adhere as closely as possible to standard HTTP and REST conventions in its use of HTTP verbs.
+|===
+| Verb | Usage
+
+| `GET`
+| Used to retrieve a resource
+
+| `POST`
+| Used to create a new resource
+
+| `PUT`
+| Used to update an existing resource, full updates only
+| `DELETE`
+| Used to delete an existing resource
+|===
+
+[[overview-http-status-codes]]
+== HTTP status codes
+People-service tries to adhere as closely as possible to standard HTTP and REST conventions in its use of HTTP status codes.
+
+|===
+| Status code | Usage
+
+| `200 OK`
+| Standard response for successful HTTP requests. + 
+ The actual response will depend on the request method used. + 
+ In a GET request, the response will contain an entity corresponding to the requested resource.
+
+| `201 Created`
+| The request has been fulfilled and resulted in a new resource being created. + 
+ The actual response will depend on the request method used. + 
+ In a POST request, the response will contain a location describing the new resource.
+
+| `204 No Content`
+| The server successfully processed the request, but is not returning any content.
+
+| `400 Bad Request`
+| The server cannot or will not process the request due to something that is perceived to be a client error (e.g., malformed request syntax, invalid request message framing, or deceptive request routing).
+  
+| `401 Unauthorized`
+| The provided authentication information isn't matching and the requested resource cannot be accessed.
+
+| `404 Not Found`
+| The requested resource could not be found but may be available again in the future. Subsequent requests by the client are permissible.
+  
+| `406 Not Acceptable`
+| The content-type from the request accept header could not be matched on a resource.
+|===
+
+[[overview-resources]]
+== Resources
 
 [[resources-people]]
-== People
-
-The peoples provides the entry point into the service.
+=== People
+The People resource is used to create, modify and list people.
 
 [[resources-people-get]]
-=== GET
-==== Response structure 
+==== GET
+===== Response structure 
 include::{snippets}/get-people/response-fields.adoc[]
 
-==== Example request
+===== Example request
 include::{snippets}/get-people/http-request.adoc[]
 
-==== Example response
+===== Example response
 include::{snippets}/get-people/http-response.adoc[]
 
 [[resources-people-post]]
-=== POST
-==== Request structure 
+==== POST
+===== Request structure 
 include::{snippets}/post-people/request-fields.adoc[]
 
-==== Example request
+===== Example request
 include::{snippets}/post-people/http-request.adoc[]
 
-==== Example response
+===== Example response
 include::{snippets}/post-people/http-response.adoc[]
