@@ -1,5 +1,6 @@
 node {
 	def mvnHome = tool 'maven-3.3.9'
+	def sshPrefix = "ssh docker@dockerhost"
 
 	stage('Checkout') { 
         checkout scm
@@ -19,8 +20,8 @@ node {
     }
     
     stage('Deploy'){
-    	def sshPrefix = "ssh docker@dockerhost"
-    	sh "${sshPrefix} docker stop ${pomArtifactId()}; ${sshPrefix} docker run --rm --name ${pomArtifactId()} -d -p 8080:8080 dockerhost:8082/${pomArtifactId()}:${pomVersion()}"
+    	sh "${sshPrefix} docker stop ${pomArtifactId()} || true;" 
+    	sh "${sshPrefix} docker run --rm --name ${pomArtifactId()} -d -p 8080:8080 dockerhost:8082/${pomArtifactId()}:${pomVersion()}"
     }
 }
 
