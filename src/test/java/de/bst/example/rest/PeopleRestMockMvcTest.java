@@ -13,6 +13,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.util.Arrays;
 import java.util.UUID;
 
 import org.junit.Before;
@@ -63,15 +64,16 @@ public class PeopleRestMockMvcTest {
 		// Given
 		Mockito.when(peopleService.findBy(Mockito.eq(ID))).thenReturn(ImmutablePeople.builder().age(11L).id(ID).name("Bastian").build());
 		Mockito.when(peopleService.findBy(Mockito.eq(ID_NOT_FOUND))).thenThrow(new NotFoundException("Id nicht gefunden"));
+		Mockito.when(peopleService.findAll()).thenReturn(Arrays.asList(ImmutablePeople.builder().age(11L).id(ID).name("Bastian").build()));
 	}
 
 	@Test
-	public void test_get_people_http_200() throws Exception {
+	public void test_get_json_people_http_200() throws Exception {
 		// When - Then
 		mockMvc.perform(get(PeopleRest.URL_PEOPLE_W_ID, ID).with(httpBasic("user", "password")).accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk()).andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON_VALUE))
 				.andExpect(content().json("{\"name\":\"Bastian\",\"age\":11,\"id\":\"" + ID + "\"}", false))
-				.andDo(document("get-people",
+				.andDo(document("people-get-json",
 						responseFields(fieldWithPath("id").description("The id of the people"),
 								fieldWithPath("name").description("The name of the people"),
 								fieldWithPath("age").description("The age of the people"),
@@ -79,7 +81,7 @@ public class PeopleRestMockMvcTest {
 	}
 
 	@Test
-	public void test_get_people_http_404() throws Exception {
+	public void test_get_json_people_http_404() throws Exception {
 		// When - Then
 		mockMvc.perform(
 				get(PeopleRest.URL_PEOPLE_W_ID, ID_NOT_FOUND).with(httpBasic("user", "password")).accept(MediaType.APPLICATION_JSON))
@@ -87,9 +89,16 @@ public class PeopleRestMockMvcTest {
 	}
 
 	@Test
-	public void test_get_people_http_401() throws Exception {
+	public void test_get_json_people_http_401() throws Exception {
 		// When - Then
 		mockMvc.perform(get(PeopleRest.URL_PEOPLE_W_ID, ID_NOT_FOUND)).andExpect(status().isUnauthorized());
+	}
+
+	@Test
+	public void test_get_atom_people_http_200() throws Exception {
+		// When - Then
+		mockMvc.perform(get(PeopleRest.URL_PEOPLE).with(httpBasic("user", "password")).accept(MediaType.APPLICATION_ATOM_XML))
+				.andExpect(status().isOk()).andExpect(content().contentType(MediaType.APPLICATION_ATOM_XML));
 	}
 
 	@Test
@@ -102,7 +111,7 @@ public class PeopleRestMockMvcTest {
 		mockMvc.perform(post(PeopleRest.URL_PEOPLE).with(httpBasic("user", "password")).content(String.format(newPeople, id))
 				.contentType(MediaType.APPLICATION_JSON)).andExpect(status().isCreated())
 				.andExpect(header().string("Location", PeopleRest.URL_PEOPLE_W_ID.replace("{id}", id)))
-				.andDo(document("post-people",
+				.andDo(document("people-post",
 						requestFields(fieldWithPath("id").description("The id of the people"),
 								fieldWithPath("name").description("The name of the people"),
 								fieldWithPath("age").description("The age of the people"))));

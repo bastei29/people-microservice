@@ -37,6 +37,11 @@
 				<artifactId>rome</artifactId>
 				<version>1.7.2</version>
 			</dependency>
+			<dependency>
+				<groupId>xmlunit</groupId>
+				<artifactId>xmlunit</artifactId>
+				<version>1.4</version>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 
@@ -104,6 +109,11 @@
 		<dependency>
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>xmlunit</groupId>
+			<artifactId>xmlunit</artifactId>
 			<scope>test</scope>
 		</dependency>
 		<dependency>

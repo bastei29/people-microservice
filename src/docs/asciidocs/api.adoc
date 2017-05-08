@@ -73,24 +73,35 @@ People-service tries to adhere as closely as possible to standard HTTP and REST 
 === People
 The People resource is used to create, modify and list people.
 
-[[resources-people-get]]
-==== GET
+[[resources-people-get-json]]
+==== GET Content-Type: application/json
 ===== Response structure 
-include::{snippets}/get-people/response-fields.adoc[]
+include::{snippets}/people-get-json/response-fields.adoc[]
 
 ===== Example request
-include::{snippets}/get-people/http-request.adoc[]
+include::{snippets}/people-get-json/http-request.adoc[]
 
 ===== Example response
-include::{snippets}/get-people/http-response.adoc[]
+include::{snippets}/people-get-json/http-response.adoc[]
+
+[[resources-people-get-atom]]
+==== GET Content-Type: application/atom+xml
+===== Response structure 
+Dokumentation von ATOM+XML MediaType nicht unterstützt
+
+===== Example request
+Dokumentation von ATOM+XML MediaType nicht unterstützt
+
+===== Example response
+Dokumentation von ATOM+XML MediaType nicht unterstützt
 
 [[resources-people-post]]
 ==== POST
 ===== Request structure 
-include::{snippets}/post-people/request-fields.adoc[]
+include::{snippets}/people-post/request-fields.adoc[]
 
 ===== Example request
-include::{snippets}/post-people/http-request.adoc[]
+include::{snippets}/people-post/http-request.adoc[]
 
 ===== Example response
-include::{snippets}/post-people/http-response.adoc[]
+include::{snippets}/people-post/http-response.adoc[]
