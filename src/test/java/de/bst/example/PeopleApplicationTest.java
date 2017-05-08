@@ -15,12 +15,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import de.bst.example.api.ImmutablePeople;
+import de.bst.example.api.MediaTypesWithVersion;
 import de.bst.example.api.People;
 import de.bst.example.rest.PeopleRest;
 
@@ -57,9 +60,12 @@ public class PeopleApplicationTest {
 		// Given
 		final String id = UUID.randomUUID().toString();
 		final People people = ImmutablePeople.builder().id(id).name("Test").age(10L).build();
+		final HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Type", MediaTypesWithVersion.PEOPLE_V1_JSON_MEDIATYPE);
+		final HttpEntity<People> entity = new HttpEntity<>(people, headers);
 
 		// When
-		final URI location = this.restTemplate.postForLocation(PeopleRest.URL_PEOPLE, people);
+		final URI location = this.restTemplate.postForLocation(PeopleRest.URL_PEOPLE, entity);
 
 		// Then
 		assertThat(location).isEqualTo(URI.create(PeopleRest.URL_PEOPLE_W_ID.replace("{id}", id)));

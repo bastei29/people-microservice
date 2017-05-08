@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
+import de.bst.example.api.MediaTypesWithVersion;
 import de.bst.example.api.People;
 import de.bst.example.service.NotFoundException;
 import de.bst.example.service.PeopleService;
@@ -31,12 +32,12 @@ public class PeopleRest {
 	@Autowired
 	private PeopleService peopleService;
 
-	@GetMapping(value = URL_PEOPLE_W_ID, produces = MediaType.APPLICATION_JSON_VALUE)
+	@GetMapping(value = URL_PEOPLE_W_ID, produces = MediaTypesWithVersion.PEOPLE_V1_JSON_MEDIATYPE)
 	public People peopleGet(@PathVariable String id) {
 		return peopleService.findBy(id);
 	}
 
-	@PostMapping(value = URL_PEOPLE, consumes = MediaType.APPLICATION_JSON_VALUE)
+	@PostMapping(value = URL_PEOPLE, consumes = MediaTypesWithVersion.PEOPLE_V1_JSON_MEDIATYPE)
 	public ResponseEntity<?> peoplePost(@RequestBody People people) {
 		peopleService.add(people);
 		return ResponseEntity.created(URI.create(URL_PEOPLE_W_ID.replace("{id}", people.id()))).build();

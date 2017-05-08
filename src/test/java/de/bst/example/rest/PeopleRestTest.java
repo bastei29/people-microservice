@@ -10,7 +10,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.RequestBuilder;
@@ -20,6 +19,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import de.bst.example.api.ImmutablePeople;
+import de.bst.example.api.MediaTypesWithVersion;
 import de.bst.example.service.PeopleService;
 
 /**
@@ -46,7 +46,8 @@ public class PeopleRestTest {
 		Mockito.when(peopleService.findBy(Mockito.anyString()))
 				.thenReturn(ImmutablePeople.builder().age(11L).id(ID).name("Bastian").build());
 		final MockMvc mockMvc = MockMvcBuilders.standaloneSetup(peopleRest).build();
-		final RequestBuilder request = MockMvcRequestBuilders.get(PeopleRest.URL_PEOPLE_W_ID, ID).accept(MediaType.APPLICATION_JSON);
+		final RequestBuilder request = MockMvcRequestBuilders.get(PeopleRest.URL_PEOPLE_W_ID, ID)
+				.accept(MediaTypesWithVersion.PEOPLE_V1_JSON_MEDIATYPE);
 
 		// When
 		response = mockMvc.perform(request);
@@ -61,7 +62,7 @@ public class PeopleRestTest {
 	@Test
 	public void test_get_people_http_content_typ() throws Exception {
 		// Then
-		response.andExpect(MockMvcResultMatchers.content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
+		response.andExpect(MockMvcResultMatchers.content().contentTypeCompatibleWith(MediaTypesWithVersion.PEOPLE_V1_JSON_MEDIATYPE));
 	}
 
 	@Test

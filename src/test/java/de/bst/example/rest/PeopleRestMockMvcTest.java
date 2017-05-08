@@ -33,6 +33,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import de.bst.example.api.ImmutablePeople;
+import de.bst.example.api.MediaTypesWithVersion;
 import de.bst.example.service.NotFoundException;
 import de.bst.example.service.PeopleService;
 
@@ -70,8 +71,9 @@ public class PeopleRestMockMvcTest {
 	@Test
 	public void test_get_json_people_http_200() throws Exception {
 		// When - Then
-		mockMvc.perform(get(PeopleRest.URL_PEOPLE_W_ID, ID).with(httpBasic("user", "password")).accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk()).andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON_VALUE))
+		mockMvc.perform(get(PeopleRest.URL_PEOPLE_W_ID, ID).with(httpBasic("user", "password"))
+				.accept(MediaTypesWithVersion.PEOPLE_V1_JSON_MEDIATYPE)).andExpect(status().isOk())
+				.andExpect(content().contentTypeCompatibleWith(MediaTypesWithVersion.PEOPLE_V1_JSON_MEDIATYPE))
 				.andExpect(content().json("{\"name\":\"Bastian\",\"age\":11,\"id\":\"" + ID + "\"}", false))
 				.andDo(document("people-get-json",
 						responseFields(fieldWithPath("id").description("The id of the people"),
@@ -83,15 +85,22 @@ public class PeopleRestMockMvcTest {
 	@Test
 	public void test_get_json_people_http_404() throws Exception {
 		// When - Then
-		mockMvc.perform(
-				get(PeopleRest.URL_PEOPLE_W_ID, ID_NOT_FOUND).with(httpBasic("user", "password")).accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isNotFound());
+		mockMvc.perform(get(PeopleRest.URL_PEOPLE_W_ID, ID_NOT_FOUND).with(httpBasic("user", "password"))
+				.accept(MediaTypesWithVersion.PEOPLE_V1_JSON_MEDIATYPE)).andExpect(status().isNotFound());
 	}
 
 	@Test
 	public void test_get_json_people_http_401() throws Exception {
 		// When - Then
 		mockMvc.perform(get(PeopleRest.URL_PEOPLE_W_ID, ID_NOT_FOUND)).andExpect(status().isUnauthorized());
+	}
+
+	@Test
+	public void test_get_json_people_http_406() throws Exception {
+		// When - Then
+		mockMvc.perform(
+				get(PeopleRest.URL_PEOPLE_W_ID, ID_NOT_FOUND).with(httpBasic("user", "password")).accept(MediaType.APPLICATION_JSON))
+				.andExpect(status().isNotAcceptable());
 	}
 
 	@Test
@@ -109,7 +118,7 @@ public class PeopleRestMockMvcTest {
 
 		// When - Then
 		mockMvc.perform(post(PeopleRest.URL_PEOPLE).with(httpBasic("user", "password")).content(String.format(newPeople, id))
-				.contentType(MediaType.APPLICATION_JSON)).andExpect(status().isCreated())
+				.contentType(MediaTypesWithVersion.PEOPLE_V1_JSON_MEDIATYPE)).andExpect(status().isCreated())
 				.andExpect(header().string("Location", PeopleRest.URL_PEOPLE_W_ID.replace("{id}", id)))
 				.andDo(document("people-post",
 						requestFields(fieldWithPath("id").description("The id of the people"),
@@ -125,12 +134,23 @@ public class PeopleRestMockMvcTest {
 
 		// When - Then
 		mockMvc.perform(post(PeopleRest.URL_PEOPLE).with(httpBasic("user", "password")).content(String.format(newPeople, id))
-				.contentType(MediaType.APPLICATION_JSON)).andExpect(status().isBadRequest());
+				.contentType(MediaTypesWithVersion.PEOPLE_V1_JSON_MEDIATYPE)).andExpect(status().isBadRequest());
 	}
 
 	@Test
 	public void test_post_people_http_401() throws Exception {
 		// When - Then
 		mockMvc.perform(post(PeopleRest.URL_PEOPLE, new Object())).andExpect(status().isUnauthorized());
+	}
+
+	@Test
+	public void test_post_people_http_415() throws Exception {
+		// Given
+		final String id = UUID.randomUUID().toString();
+		final String newPeople = "{\"id\":\"%s\",\"name\":\"212dsf3\"}";
+
+		// When - Then
+		mockMvc.perform(post(PeopleRest.URL_PEOPLE).with(httpBasic("user", "password")).content(String.format(newPeople, id))
+				.contentType(MediaType.APPLICATION_JSON)).andExpect(status().isUnsupportedMediaType());
 	}
 }
