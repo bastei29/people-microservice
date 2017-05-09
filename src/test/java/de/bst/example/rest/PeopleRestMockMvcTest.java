@@ -75,7 +75,7 @@ public class PeopleRestMockMvcTest {
 				.accept(MediaTypesWithVersion.PEOPLE_V1_JSON_MEDIATYPE)).andExpect(status().isOk())
 				.andExpect(content().contentTypeCompatibleWith(MediaTypesWithVersion.PEOPLE_V1_JSON_MEDIATYPE))
 				.andExpect(content().json("{\"name\":\"Bastian\",\"age\":11,\"id\":\"" + ID + "\"}", false))
-				.andDo(document("people-get-json",
+				.andDo(document("people-get-json-v1",
 						responseFields(fieldWithPath("id").description("The id of the people"),
 								fieldWithPath("name").description("The name of the people"),
 								fieldWithPath("age").description("The age of the people"),
@@ -120,7 +120,7 @@ public class PeopleRestMockMvcTest {
 		mockMvc.perform(post(PeopleRest.URL_PEOPLE).with(httpBasic("user", "password")).content(String.format(newPeople, id))
 				.contentType(MediaTypesWithVersion.PEOPLE_V1_JSON_MEDIATYPE)).andExpect(status().isCreated())
 				.andExpect(header().string("Location", PeopleRest.URL_PEOPLE_W_ID.replace("{id}", id)))
-				.andDo(document("people-post",
+				.andDo(document("people-post-v1",
 						requestFields(fieldWithPath("id").description("The id of the people"),
 								fieldWithPath("name").description("The name of the people"),
 								fieldWithPath("age").description("The age of the people"))));

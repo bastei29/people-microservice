@@ -1,4 +1,4 @@
-= People-service 
+= People Service 
 Bastian Steinbach;
 :doctype: book
 :icons: font
@@ -64,28 +64,33 @@ People-service tries to adhere as closely as possible to standard HTTP and REST 
   
 | `406 Not Acceptable`
 | The content-type from the request accept header could not be matched on a resource.
+
+| `415 Unsupported Media Type`
+| The content-type of the request data could not be matched on the resource.
 |===
 
-[[overview-resources]]
-== Resources
-
 [[resources-people]]
-=== People
+== Resource People
 The People resource is used to create, modify and list people.
 
-[[resources-people-get-json]]
-==== GET Content-Type: application/json
+[[resources-people-get]]
+=== GET
+
+[[resources-people-get-json-v1]]
+==== Content-Type: application/vnd.people.v1+json
+
 ===== Response structure 
-include::{snippets}/people-get-json/response-fields.adoc[]
+include::{snippets}/people-get-json-v1/response-fields.adoc[]
 
 ===== Example request
-include::{snippets}/people-get-json/http-request.adoc[]
+include::{snippets}/people-get-json-v1/http-request.adoc[]
 
 ===== Example response
-include::{snippets}/people-get-json/http-response.adoc[]
+include::{snippets}/people-get-json-v1/http-response.adoc[]
 
 [[resources-people-get-atom]]
-==== GET Content-Type: application/atom+xml
+==== Content-Type: application/atom+xml
+
 ===== Response structure 
 Dokumentation von ATOM+XML MediaType nicht unterstützt
 
@@ -96,12 +101,16 @@ Dokumentation von ATOM+XML MediaType nicht unterstützt
 Dokumentation von ATOM+XML MediaType nicht unterstützt
 
 [[resources-people-post]]
-==== POST
+=== POST
+ 
+[[resources-people-post-v1]]
+==== Content-Type: application/vnd.people.v1+json
+
 ===== Request structure 
-include::{snippets}/people-post/request-fields.adoc[]
+include::{snippets}/people-post-v1/request-fields.adoc[]
 
 ===== Example request
-include::{snippets}/people-post/http-request.adoc[]
+include::{snippets}/people-post-v1/http-request.adoc[]
 
 ===== Example response
-include::{snippets}/people-post/http-response.adoc[]
+include::{snippets}/people-post-v1/http-response.adoc[]
