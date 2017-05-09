@@ -5,7 +5,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.net.URI;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.Map;
 import java.util.UUID;
 
 import org.junit.Before;
@@ -17,7 +16,7 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -42,7 +41,7 @@ public class PeopleApplicationTest {
 	@Sql(
 			statements = "insert into People_Entity(id,name,age,created,updated) values('abc-123','Test',10,'2017-04-19 12:23:44','2017-04-19 12:23:44')")
 	@Test
-	public void test_people_endpoint_get_200() {
+	public void test_people_endpoint_get_json_200() {
 		// Given
 		final String id = "abc-123";
 		final People people = ImmutablePeople.builder().id(id).name("Test").age(10L)
@@ -53,6 +52,17 @@ public class PeopleApplicationTest {
 
 		// Then
 		assertThat(entity).isEqualTo(people);
+	}
+
+	@Test
+	public void test_people_endpoint_get_atom_200() {
+
+		// When
+		final ResponseEntity<String> entity = this.restTemplate.getForEntity(PeopleRest.URL_PEOPLE, String.class);
+
+		// Then
+		assertThat(entity.getHeaders().getContentType().getType()).isEqualTo(MediaType.APPLICATION_ATOM_XML.getType());
+		assertThat(entity.getBody()).startsWith("<");
 	}
 
 	@Test
@@ -69,35 +79,5 @@ public class PeopleApplicationTest {
 
 		// Then
 		assertThat(location).isEqualTo(URI.create(PeopleRest.URL_PEOPLE_W_ID.replace("{id}", id)));
-	}
-
-	@Test
-	public void test_info_endpoint_get_200() {
-		// When
-		@SuppressWarnings("rawtypes")
-		final ResponseEntity<Map> entity = this.restTemplate.getForEntity("/info", Map.class);
-
-		// Then
-		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
-	}
-
-	@Test
-	public void test_health_endpoint_get_200() {
-		// When
-		@SuppressWarnings("rawtypes")
-		final ResponseEntity<Map> entity = this.restTemplate.getForEntity("/health", Map.class);
-
-		// Then
-		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
-	}
-
-	@Test
-	public void test_metrics_endpoint_get_200() {
-		// When
-		@SuppressWarnings("rawtypes")
-		final ResponseEntity<Map> entity = this.restTemplate.getForEntity("/metrics", Map.class);
-
-		// Then
-		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 	}
 }

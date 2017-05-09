@@ -42,6 +42,11 @@
 				<artifactId>xmlunit</artifactId>
 				<version>1.4</version>
 			</dependency>
+			<dependency>
+				<groupId>io.rest-assured</groupId>
+				<artifactId>rest-assured</artifactId>
+				<version>3.0.3</version>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 
@@ -117,6 +122,11 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
+			<groupId>io.rest-assured</groupId>
+			<artifactId>rest-assured</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-devtools</artifactId>
 			<optional>true</optional>
@@ -143,9 +153,28 @@
 				</executions>
 			</plugin>
 			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<excludes>
+						<exclude>**/*IT.java</exclude>
+					</excludes>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-failsafe-plugin</artifactId>
+				<configuration>
+					<includes>
+						<include>**/*IT.java</include>
+					</includes>
+					<argLine>-Dcontainer.port=@{container.port}</argLine>
+				</configuration>
+			</plugin>
+			<plugin>
 				<groupId>org.asciidoctor</groupId>
 				<artifactId>asciidoctor-maven-plugin</artifactId>
-				<version>1.5.2</version>
+				<version>1.5.5</version>
 				<executions>
 					<execution>
 						<id>generate-docs</id>
@@ -166,22 +195,61 @@
 				</executions>
 			</plugin>
 			<plugin>
-				<groupId>com.spotify</groupId>
+				<groupId>io.fabric8</groupId>
 				<artifactId>docker-maven-plugin</artifactId>
-				<version>0.4.13</version>
+				<version>0.20.1</version>
 				<configuration>
-					<imageName>dockerhost:8082/${project.artifactId}:${project.version}</imageName>
-					<dockerDirectory>src/main/docker</dockerDirectory>
-					<registryUrl>http://dockerhost:8082</registryUrl>
-					<serverId>cdi-docker-repo</serverId>
-					<resources>
-						<resource>
-							<targetPath>/</targetPath>
-							<directory>${project.build.directory}</directory>
-							<include>${project.build.finalName}.jar</include>
-						</resource>
-					</resources>
+					<registry>192.168.1.43:8082</registry>
+					<images>
+						<image>
+							<name>192.168.1.43:8082/${project.artifactId}:${project.version}</name>
+							<build>
+								<dockerFile>Dockerfile</dockerFile>
+								<assembly>
+									<descriptorRef>artifact</descriptorRef>
+								</assembly>
+							</build>
+							<run>
+								<ports>
+									<port>container.port:8080</port>
+								</ports>
+								<wait>
+									<http>
+										<url>http://localhost:${container.port}/people</url>
+										<method>GET</method>
+										<status>401</status>
+									</http>
+									<time>60000</time>
+								</wait>
+							</run>
+						</image>
+					</images>
 				</configuration>
+				<executions>
+					<execution>
+						<id>start</id>
+						<phase>pre-integration-test</phase>
+						<goals>
+							<goal>build</goal>
+							<goal>start</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>stop</id>
+						<phase>post-integration-test</phase>
+						<goals>
+							<goal>stop</goal>
+							<goal>remove</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>push</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>push</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>
