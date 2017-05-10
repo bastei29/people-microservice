@@ -11,7 +11,8 @@ node {
     }
     
     stage('Deploy'){
-    	sh "${sshPrefix} docker stop ${pomArtifactId()} || true;" 
+    	sh "${sshPrefix} docker stop ${pomArtifactId()} || true;"
+    	sh "${sshPrefix} docker pull dockerhost:8082/${pomArtifactId()}:${pomVersion()}"
     	sh "${sshPrefix} docker run --rm --name ${pomArtifactId()} -d -p 8080:8080 dockerhost:8082/${pomArtifactId()}:${pomVersion()}"
     }
 }
