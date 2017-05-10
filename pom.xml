@@ -199,10 +199,10 @@
 				<artifactId>docker-maven-plugin</artifactId>
 				<version>0.20.1</version>
 				<configuration>
-					<registry>192.168.1.43:8082</registry>
+					<registry>dockerhost:8082</registry>
 					<images>
 						<image>
-							<name>192.168.1.43:8082/${project.artifactId}:${project.version}</name>
+							<name>dockerhost:8082/${project.artifactId}:${project.version}</name>
 							<build>
 								<dockerFile>Dockerfile</dockerFile>
 								<assembly>
