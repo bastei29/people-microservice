@@ -6,6 +6,7 @@ import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.docu
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
+import static org.springframework.restdocs.snippet.Attributes.key;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -25,6 +26,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.JUnitRestDocumentation;
+import org.springframework.restdocs.constraints.ConstraintDescriptions;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
@@ -32,6 +34,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import de.bst.example.api.MediaTypesWithVersion;
+import de.bst.example.api.People;
 import de.bst.example.service.PeopleService;
 
 @RunWith(SpringRunner.class)
@@ -67,6 +70,8 @@ public class PeopleRestPostMockMvcTest {
 	@MockBean
 	private PeopleService peopleService;
 
+	private final ConstraintDescriptions description = new ConstraintDescriptions(People.class);
+
 	@Before
 	public void setUp() throws Exception {
 
@@ -85,9 +90,13 @@ public class PeopleRestPostMockMvcTest {
 				.contentType(MediaTypesWithVersion.PEOPLE_V1_JSON_MEDIATYPE)).andExpect(status().isCreated())
 				.andExpect(header().string("Location", PeopleRest.URL_PEOPLE_W_ID.replace("{id}", id)))
 				.andDo(document("people-post-v1",
-						requestFields(fieldWithPath("id").description("The id of the people"),
-								fieldWithPath("name").description("The name of the people"),
-								fieldWithPath("age").description("The age of the people"))));
+						requestFields(
+								fieldWithPath("id").description("The id of the people")
+										.attributes(key("constraints").value(description.descriptionsForProperty("id"))),
+								fieldWithPath("name").description("The name of the people")
+										.attributes(key("constraints").value(description.descriptionsForProperty("name"))),
+								fieldWithPath("age").description("The age of the people")
+										.attributes(key("constraints").value(description.descriptionsForProperty("age"))))));
 	}
 
 	@Test
