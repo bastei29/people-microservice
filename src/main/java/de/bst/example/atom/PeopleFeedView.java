@@ -44,21 +44,21 @@ public class PeopleFeedView extends AbstractAtomFeedView {
 		final List<Entry> entries = new ArrayList<>();
 		for (final People people : typedListGet(model.get(FEED_PEOPLE_LIST), People.class)) {
 			final Entry entry = new Entry();
-			entry.setId(people.id());
-			entry.setPublished(Date.from(people.created()));
-			entry.setCreated(Date.from(people.created()));
+			entry.setId(people.getId());
+			entry.setPublished(Date.from(people.getCreated()));
+			entry.setCreated(Date.from(people.getCreated()));
 			final List<Link> links = new ArrayList<>();
 			final Link link = new Link();
-			link.setHref(request.getRequestURL().toString() + "/" + people.id());
+			link.setHref(request.getRequestURL().toString() + "/" + people.getId());
 			link.setType(MediaType.APPLICATION_ATOM_XML_VALUE);
 			links.add(link);
 			entry.setAlternateLinks(links);
 			final Content content = new Content();
-			content.setSrc(request.getRequestURL().toString() + "/" + people.id());
+			content.setSrc(request.getRequestURL().toString() + "/" + people.getId());
 			content.setType(MediaType.APPLICATION_JSON_VALUE);
 			entry.setContents(Arrays.asList(content));
 			final Content summary = new Content();
-			summary.setValue("This is people " + people.id());
+			summary.setValue("This is people " + people.getId());
 			entry.setSummary(summary);
 			entries.add(entry);
 		}

@@ -3,14 +3,11 @@ package de.bst.example.rest;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
-import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.Arrays;
@@ -40,7 +37,7 @@ import de.bst.example.service.PeopleService;
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @WebAppConfiguration
-public class PeopleRestMockMvcTest {
+public class PeopleRestGetMockMvcTest {
 
 	private static String ID = UUID.randomUUID().toString();
 	private static String ID_NOT_FOUND = UUID.randomUUID().toString();
@@ -108,49 +105,5 @@ public class PeopleRestMockMvcTest {
 		// When - Then
 		mockMvc.perform(get(PeopleRest.URL_PEOPLE).with(httpBasic("user", "password")).accept(MediaType.APPLICATION_ATOM_XML))
 				.andExpect(status().isOk()).andExpect(content().contentType(MediaType.APPLICATION_ATOM_XML));
-	}
-
-	@Test
-	public void test_post_people_http_201() throws Exception {
-		// Given
-		final String id = UUID.randomUUID().toString();
-		final String newPeople = "{\"id\":\"%s\",\"name\":\"Neuer\",\"age\":1}";
-
-		// When - Then
-		mockMvc.perform(post(PeopleRest.URL_PEOPLE).with(httpBasic("user", "password")).content(String.format(newPeople, id))
-				.contentType(MediaTypesWithVersion.PEOPLE_V1_JSON_MEDIATYPE)).andExpect(status().isCreated())
-				.andExpect(header().string("Location", PeopleRest.URL_PEOPLE_W_ID.replace("{id}", id)))
-				.andDo(document("people-post-v1",
-						requestFields(fieldWithPath("id").description("The id of the people"),
-								fieldWithPath("name").description("The name of the people"),
-								fieldWithPath("age").description("The age of the people"))));
-	}
-
-	@Test
-	public void test_post_people_http_400() throws Exception {
-		// Given
-		final String id = UUID.randomUUID().toString();
-		final String newPeople = "{\"id\":\"%s\",\"name\":\"212dsf3\"}";
-
-		// When - Then
-		mockMvc.perform(post(PeopleRest.URL_PEOPLE).with(httpBasic("user", "password")).content(String.format(newPeople, id))
-				.contentType(MediaTypesWithVersion.PEOPLE_V1_JSON_MEDIATYPE)).andExpect(status().isBadRequest());
-	}
-
-	@Test
-	public void test_post_people_http_401() throws Exception {
-		// When - Then
-		mockMvc.perform(post(PeopleRest.URL_PEOPLE, new Object())).andExpect(status().isUnauthorized());
-	}
-
-	@Test
-	public void test_post_people_http_415() throws Exception {
-		// Given
-		final String id = UUID.randomUUID().toString();
-		final String newPeople = "{\"id\":\"%s\",\"name\":\"212dsf3\"}";
-
-		// When - Then
-		mockMvc.perform(post(PeopleRest.URL_PEOPLE).with(httpBasic("user", "password")).content(String.format(newPeople, id))
-				.contentType(MediaType.APPLICATION_JSON)).andExpect(status().isUnsupportedMediaType());
 	}
 }

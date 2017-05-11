@@ -5,6 +5,7 @@ import java.util.UUID;
 
 import javax.validation.constraints.Pattern;
 
+import org.hibernate.validator.constraints.Range;
 import org.immutables.value.Value;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -16,16 +17,17 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 @Value.Style(defaultAsDefault = true, jdkOnly = true)
 public interface People {
 
-	default String id() {
+	default String getId() {
 		return UUID.randomUUID().toString();
 	}
 
-	@Pattern(regexp = "\\w")
-	String name();
+	@Pattern(regexp = "[a-zA-Z]{1,50}")
+	String getName();
 
-	Long age();
+	@Range(min = 1, max = 199)
+	Long getAge();
 
-	default Instant created() {
+	default Instant getCreated() {
 		return Instant.now();
 	}
 }

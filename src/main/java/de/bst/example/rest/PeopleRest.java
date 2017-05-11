@@ -5,10 +5,13 @@ import static de.bst.example.PeopleApplication.FEED_PEOPLE_UPDATED;
 
 import java.net.URI;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -38,9 +41,14 @@ public class PeopleRest {
 	}
 
 	@PostMapping(value = URL_PEOPLE, consumes = MediaTypesWithVersion.PEOPLE_V1_JSON_MEDIATYPE)
-	public ResponseEntity<?> peoplePost(@RequestBody People people) {
-		peopleService.add(people);
-		return ResponseEntity.created(URI.create(URL_PEOPLE_W_ID.replace("{id}", people.id()))).build();
+	public ResponseEntity<?> peoplePost(@Valid @RequestBody People people, BindingResult bindingResult) {
+		System.out.println(bindingResult);
+		if (bindingResult.hasErrors()) {
+			return ResponseEntity.badRequest().build();
+		} else {
+			peopleService.add(people);
+			return ResponseEntity.created(URI.create(URL_PEOPLE_W_ID.replace("{id}", people.getId()))).build();
+		}
 	}
 
 	@GetMapping(value = URL_PEOPLE, produces = MediaType.APPLICATION_ATOM_XML_VALUE)

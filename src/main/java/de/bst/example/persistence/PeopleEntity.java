@@ -35,11 +35,11 @@ public class PeopleEntity {
 	}
 
 	public PeopleEntity(People people) {
-		id = people.id();
-		name = people.name();
-		age = people.age();
-		created = Date.from(people.created());
-		updated = Date.from(people.created());
+		id = people.getId();
+		name = people.getName();
+		age = people.getAge();
+		created = Date.from(people.getCreated());
+		updated = Date.from(people.getCreated());
 	}
 
 	public People asObject() {

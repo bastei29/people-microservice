@@ -40,7 +40,7 @@ public class PeopleServiceTest {
 		final People data = createTestdata();
 
 		// When
-		final People people = peopleService.findBy(data.id());
+		final People people = peopleService.findBy(data.getId());
 
 		// Then
 		assertThat(people).isEqualTo(data);
@@ -87,7 +87,7 @@ public class PeopleServiceTest {
 		final People data = createTestdata();
 
 		// When
-		final List<People> peoples = peopleService.findAsListBy(data.id());
+		final List<People> peoples = peopleService.findAsListBy(data.getId());
 
 		// Then
 		assertThat(peoples.size()).isEqualTo(1);
