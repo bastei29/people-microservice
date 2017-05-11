@@ -8,6 +8,7 @@ import java.net.URI;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -44,7 +45,7 @@ public class PeopleRest {
 	public ResponseEntity<?> peoplePost(@Valid @RequestBody People people, BindingResult bindingResult) {
 		System.out.println(bindingResult);
 		if (bindingResult.hasErrors()) {
-			return ResponseEntity.badRequest().build();
+			return ResponseEntity.badRequest().header(HttpHeaders.CONTENT_TYPE, MediaTypesWithVersion.ERROR_JSON_MEDIATYPE).build();
 		} else {
 			peopleService.add(people);
 			return ResponseEntity.created(URI.create(URL_PEOPLE_W_ID.replace("{id}", people.getId()))).build();
