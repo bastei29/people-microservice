@@ -5,6 +5,8 @@ import static de.bst.example.PeopleApplication.FEED_PEOPLE_UPDATED;
 
 import java.net.URI;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 
@@ -26,8 +28,12 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
 import de.bst.example.api.ImmutableVndError;
+import de.bst.example.api.ImmutableVndErrors;
+import de.bst.example.api.ImmutableVndErrors.EmbeddedErrors;
 import de.bst.example.api.MediaTypesWithVersion;
 import de.bst.example.api.People;
+import de.bst.example.api.VndError;
+import de.bst.example.api.VndErrors;
 import de.bst.example.service.NotFoundException;
 import de.bst.example.service.PeopleService;
 
@@ -76,9 +82,11 @@ public class PeopleRest {
 		if (validationResult.getAllErrors().size() == 1) {
 			final ObjectError err = validationResult.getAllErrors().get(0);
 			return ResponseEntity.badRequest().header(HttpHeaders.CONTENT_TYPE, MediaTypesWithVersion.ERROR_JSON_MEDIATYPE)
-					.body(ImmutableVndError.builder().logref(id).message(extractMessage(err)).path(URL_PEOPLE).build());
+					.body(createVndError(id, err));
 		} else {
-			return ResponseEntity.badRequest().header(HttpHeaders.CONTENT_TYPE, MediaTypesWithVersion.ERROR_JSON_MEDIATYPE).build();
+			final VndErrors errors = ImmutableVndErrors.builder().total(Long.valueOf(validationResult.getAllErrors().size()))
+					._embedded(createVndErrors(id, validationResult.getAllErrors())).build();
+			return ResponseEntity.badRequest().header(HttpHeaders.CONTENT_TYPE, MediaTypesWithVersion.ERROR_JSON_MEDIATYPE).body(errors);
 		}
 	}
 
@@ -88,5 +96,14 @@ public class PeopleRest {
 				.map(item -> ((DefaultMessageSourceResolvable) item).getDefaultMessage()).findFirst()
 				.orElseGet(() -> "'unresolvable field'");
 		return new StringBuffer(field).append(" ").append(error.getDefaultMessage().replaceAll("\"", "'")).toString();
+	}
+
+	private VndError createVndError(String id, ObjectError error) {
+		return ImmutableVndError.builder().logref(id).message(extractMessage(error)).path(URL_PEOPLE).build();
+	}
+
+	private EmbeddedErrors createVndErrors(String id, Collection<ObjectError> error) {
+		return ImmutableVndErrors.EmbeddedErrors.builder()
+				.errors(error.stream().map(item -> createVndError(id, item)).collect(Collectors.toList())).build();
 	}
 }

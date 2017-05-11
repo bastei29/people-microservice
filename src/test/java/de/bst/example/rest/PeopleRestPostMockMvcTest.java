@@ -37,7 +37,21 @@ import de.bst.example.service.PeopleService;
 @WebAppConfiguration
 public class PeopleRestPostMockMvcTest {
 
-	private static final String RESPONSE_ERROR_BODY = "{\"message\":\"%s\",\"path\":\"/people\",\"logref\":\"%s\"}";
+	//@// @formatter:off
+	private static final String RESPONSE_ERROR_BODY = "{"
+				+ "\"message\":\"%s\","
+				+ "\"path\":\"/people\","
+				+ "\"logref\":\"%s\""
+			+ "}";
+	private static final String RESPONSE_ERRORS_BODY = "{"
+			+ "\"total\":%s,"
+			+ "\"_embedded\":{"
+				+ "\"errors\":["
+					+ "%s"
+				+ "]"
+			+ "}"
+			+ "}";
+	// @formatter:on
 
 	@Rule
 	public final JUnitRestDocumentation restDocumentation = new JUnitRestDocumentation("target/generated-snippets");
@@ -83,7 +97,7 @@ public class PeopleRestPostMockMvcTest {
 		mockMvc.perform(post(PeopleRest.URL_PEOPLE).with(httpBasic("user", "password")).content(String.format(newPeople, id))
 				.contentType(MediaTypesWithVersion.PEOPLE_V1_JSON_MEDIATYPE)).andDo(print()).andExpect(status().isBadRequest())
 				.andExpect(content().contentTypeCompatibleWith(MediaTypesWithVersion.ERROR_JSON_MEDIATYPE))
-				.andExpect(content().json(String.format(RESPONSE_ERROR_BODY, "name must match '[a-zA-Z]{1,50}'", id)));
+				.andExpect(content().json(errorJsonName(id)));
 	}
 
 	@Test
@@ -96,7 +110,7 @@ public class PeopleRestPostMockMvcTest {
 		mockMvc.perform(post(PeopleRest.URL_PEOPLE).with(httpBasic("user", "password")).content(String.format(newPeople, id))
 				.contentType(MediaTypesWithVersion.PEOPLE_V1_JSON_MEDIATYPE)).andExpect(status().isBadRequest())
 				.andExpect(content().contentTypeCompatibleWith(MediaTypesWithVersion.ERROR_JSON_MEDIATYPE))
-				.andExpect(content().json(String.format(RESPONSE_ERROR_BODY, "name must match '[a-zA-Z]{1,50}'", id)));
+				.andExpect(content().json(errorJsonName(id)));
 	}
 
 	@Test
@@ -109,7 +123,7 @@ public class PeopleRestPostMockMvcTest {
 		mockMvc.perform(post(PeopleRest.URL_PEOPLE).with(httpBasic("user", "password")).content(String.format(newPeople, id))
 				.contentType(MediaTypesWithVersion.PEOPLE_V1_JSON_MEDIATYPE)).andExpect(status().isBadRequest())
 				.andExpect(content().contentTypeCompatibleWith(MediaTypesWithVersion.ERROR_JSON_MEDIATYPE))
-				.andExpect(content().json(String.format(RESPONSE_ERROR_BODY, "name must match '[a-zA-Z]{1,50}'", id)));
+				.andExpect(content().json(errorJsonName(id)));
 	}
 
 	@Test
@@ -122,7 +136,7 @@ public class PeopleRestPostMockMvcTest {
 		mockMvc.perform(post(PeopleRest.URL_PEOPLE).with(httpBasic("user", "password")).content(String.format(newPeople, id))
 				.contentType(MediaTypesWithVersion.PEOPLE_V1_JSON_MEDIATYPE)).andExpect(status().isBadRequest())
 				.andExpect(content().contentTypeCompatibleWith(MediaTypesWithVersion.ERROR_JSON_MEDIATYPE))
-				.andExpect(content().json(String.format(RESPONSE_ERROR_BODY, "age must be between 1 and 199", id)));
+				.andExpect(content().json(errorJsonAge(id)));
 	}
 
 	@Test
@@ -135,7 +149,21 @@ public class PeopleRestPostMockMvcTest {
 		mockMvc.perform(post(PeopleRest.URL_PEOPLE).with(httpBasic("user", "password")).content(String.format(newPeople, id))
 				.contentType(MediaTypesWithVersion.PEOPLE_V1_JSON_MEDIATYPE)).andExpect(status().isBadRequest())
 				.andExpect(content().contentTypeCompatibleWith(MediaTypesWithVersion.ERROR_JSON_MEDIATYPE))
-				.andExpect(content().json(String.format(RESPONSE_ERROR_BODY, "age must be between 1 and 199", id)));
+				.andExpect(content().json(errorJsonAge(id)));
+	}
+
+	@Test
+	public void test_post_people_http_400_more_validation_issues() throws Exception {
+		// Given
+		final String id = UUID.randomUUID().toString();
+		final String newPeople = "{\"id\":\"%s\",\"age\":200,\"name\":\"\"}";
+
+		// When - Then
+		mockMvc.perform(post(PeopleRest.URL_PEOPLE).with(httpBasic("user", "password")).content(String.format(newPeople, id))
+				.contentType(MediaTypesWithVersion.PEOPLE_V1_JSON_MEDIATYPE)).andExpect(status().isBadRequest())
+				.andExpect(content().contentTypeCompatibleWith(MediaTypesWithVersion.ERROR_JSON_MEDIATYPE))
+				.andExpect(content().json(String.format(RESPONSE_ERRORS_BODY, 2,
+						new StringBuilder().append(errorJsonName(id)).append(",").append(errorJsonAge(id)).toString())));
 	}
 
 	@Test
@@ -153,5 +181,13 @@ public class PeopleRestPostMockMvcTest {
 		// When - Then
 		mockMvc.perform(post(PeopleRest.URL_PEOPLE).with(httpBasic("user", "password")).content(String.format(newPeople, id))
 				.contentType(MediaType.APPLICATION_JSON)).andExpect(status().isUnsupportedMediaType());
+	}
+
+	private String errorJsonName(String id) {
+		return String.format(RESPONSE_ERROR_BODY, "name must match '[a-zA-Z]{1,50}'", id);
+	}
+
+	private String errorJsonAge(String id) {
+		return String.format(RESPONSE_ERROR_BODY, "age must be between 1 and 199", id);
 	}
 }
