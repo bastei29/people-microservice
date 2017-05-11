@@ -37,7 +37,7 @@ import de.bst.example.service.PeopleService;
 @WebAppConfiguration
 public class PeopleRestPostMockMvcTest {
 
-	private static final String RESPONSE_ERROR_BODY = "{\"message\":\"must match '[a-zA-Z]{1,50}'\",\"path\":\"/people\",\"logref\":\"%s\"}";
+	private static final String RESPONSE_ERROR_BODY = "{\"message\":\"%s\",\"path\":\"/people\",\"logref\":\"%s\"}";
 
 	@Rule
 	public final JUnitRestDocumentation restDocumentation = new JUnitRestDocumentation("target/generated-snippets");
@@ -83,51 +83,59 @@ public class PeopleRestPostMockMvcTest {
 		mockMvc.perform(post(PeopleRest.URL_PEOPLE).with(httpBasic("user", "password")).content(String.format(newPeople, id))
 				.contentType(MediaTypesWithVersion.PEOPLE_V1_JSON_MEDIATYPE)).andDo(print()).andExpect(status().isBadRequest())
 				.andExpect(content().contentTypeCompatibleWith(MediaTypesWithVersion.ERROR_JSON_MEDIATYPE))
-				.andExpect(content().json(String.format(RESPONSE_ERROR_BODY, id)));
+				.andExpect(content().json(String.format(RESPONSE_ERROR_BODY, "name must match '[a-zA-Z]{1,50}'", id)));
 	}
 
 	@Test
 	public void test_post_people_http_400_name_grt50() throws Exception {
 		// Given
-		final String newPeople = "{\"age\":\"1\",\"name\":\"aaaaaaaaaabbbbbbbbbbccccccccccddddddddddeeeeeeeeeef\"}";
+		final String id = UUID.randomUUID().toString();
+		final String newPeople = "{\"id\":\"%s\",\"age\":\"1\",\"name\":\"aaaaaaaaaabbbbbbbbbbccccccccccddddddddddeeeeeeeeeef\"}";
 
 		// When - Then
-		mockMvc.perform(post(PeopleRest.URL_PEOPLE).with(httpBasic("user", "password")).content(newPeople)
+		mockMvc.perform(post(PeopleRest.URL_PEOPLE).with(httpBasic("user", "password")).content(String.format(newPeople, id))
 				.contentType(MediaTypesWithVersion.PEOPLE_V1_JSON_MEDIATYPE)).andExpect(status().isBadRequest())
-				.andExpect(content().contentTypeCompatibleWith(MediaTypesWithVersion.ERROR_JSON_MEDIATYPE));
+				.andExpect(content().contentTypeCompatibleWith(MediaTypesWithVersion.ERROR_JSON_MEDIATYPE))
+				.andExpect(content().json(String.format(RESPONSE_ERROR_BODY, "name must match '[a-zA-Z]{1,50}'", id)));
 	}
 
 	@Test
 	public void test_post_people_http_400_name_only_abc() throws Exception {
 		// Given
-		final String newPeople = "{\"age\":\"1\",\"name\":\"323143\"}";
+		final String id = UUID.randomUUID().toString();
+		final String newPeople = "{\"id\":\"%s\",\"age\":\"1\",\"name\":\"323143\"}";
 
 		// When - Then
-		mockMvc.perform(post(PeopleRest.URL_PEOPLE).with(httpBasic("user", "password")).content(newPeople)
+		mockMvc.perform(post(PeopleRest.URL_PEOPLE).with(httpBasic("user", "password")).content(String.format(newPeople, id))
 				.contentType(MediaTypesWithVersion.PEOPLE_V1_JSON_MEDIATYPE)).andExpect(status().isBadRequest())
-				.andExpect(content().contentTypeCompatibleWith(MediaTypesWithVersion.ERROR_JSON_MEDIATYPE));
+				.andExpect(content().contentTypeCompatibleWith(MediaTypesWithVersion.ERROR_JSON_MEDIATYPE))
+				.andExpect(content().json(String.format(RESPONSE_ERROR_BODY, "name must match '[a-zA-Z]{1,50}'", id)));
 	}
 
 	@Test
 	public void test_post_people_http_400_age_less_1() throws Exception {
 		// Given
-		final String newPeople = "{\"age\":0,\"name\":\"Hans\"}";
+		final String id = UUID.randomUUID().toString();
+		final String newPeople = "{\"id\":\"%s\",\"age\":0,\"name\":\"Hans\"}";
 
 		// When - Then
-		mockMvc.perform(post(PeopleRest.URL_PEOPLE).with(httpBasic("user", "password")).content(newPeople)
+		mockMvc.perform(post(PeopleRest.URL_PEOPLE).with(httpBasic("user", "password")).content(String.format(newPeople, id))
 				.contentType(MediaTypesWithVersion.PEOPLE_V1_JSON_MEDIATYPE)).andExpect(status().isBadRequest())
-				.andExpect(content().contentTypeCompatibleWith(MediaTypesWithVersion.ERROR_JSON_MEDIATYPE));
+				.andExpect(content().contentTypeCompatibleWith(MediaTypesWithVersion.ERROR_JSON_MEDIATYPE))
+				.andExpect(content().json(String.format(RESPONSE_ERROR_BODY, "age must be between 1 and 199", id)));
 	}
 
 	@Test
 	public void test_post_people_http_400_age_grt_199() throws Exception {
 		// Given
-		final String newPeople = "{\"age\":200,\"name\":\"Hans\"}";
+		final String id = UUID.randomUUID().toString();
+		final String newPeople = "{\"id\":\"%s\",\"age\":200,\"name\":\"Hans\"}";
 
 		// When - Then
-		mockMvc.perform(post(PeopleRest.URL_PEOPLE).with(httpBasic("user", "password")).content(newPeople)
+		mockMvc.perform(post(PeopleRest.URL_PEOPLE).with(httpBasic("user", "password")).content(String.format(newPeople, id))
 				.contentType(MediaTypesWithVersion.PEOPLE_V1_JSON_MEDIATYPE)).andExpect(status().isBadRequest())
-				.andExpect(content().contentTypeCompatibleWith(MediaTypesWithVersion.ERROR_JSON_MEDIATYPE));
+				.andExpect(content().contentTypeCompatibleWith(MediaTypesWithVersion.ERROR_JSON_MEDIATYPE))
+				.andExpect(content().json(String.format(RESPONSE_ERROR_BODY, "age must be between 1 and 199", id)));
 	}
 
 	@Test
