@@ -7,6 +7,7 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.requestF
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -35,6 +36,8 @@ import de.bst.example.service.PeopleService;
 @SpringBootTest
 @WebAppConfiguration
 public class PeopleRestPostMockMvcTest {
+
+	private static final String RESPONSE_ERROR_BODY = "{\"message\":\"must match '[a-zA-Z]{1,50}'\",\"path\":\"/people\",\"logref\":\"%s\"}";
 
 	@Rule
 	public final JUnitRestDocumentation restDocumentation = new JUnitRestDocumentation("target/generated-snippets");
@@ -73,12 +76,14 @@ public class PeopleRestPostMockMvcTest {
 	@Test
 	public void test_post_people_http_400_name_empty() throws Exception {
 		// Given
-		final String newPeople = "{\"age\":\"1\",\"name\":\"\"}";
+		final String id = UUID.randomUUID().toString();
+		final String newPeople = "{\"id\":\"%s\",\"name\":\"\",\"age\":1}";
 
 		// When - Then
-		mockMvc.perform(post(PeopleRest.URL_PEOPLE).with(httpBasic("user", "password")).content(newPeople)
-				.contentType(MediaTypesWithVersion.PEOPLE_V1_JSON_MEDIATYPE)).andExpect(status().isBadRequest())
-				.andExpect(content().contentTypeCompatibleWith(MediaTypesWithVersion.ERROR_JSON_MEDIATYPE));
+		mockMvc.perform(post(PeopleRest.URL_PEOPLE).with(httpBasic("user", "password")).content(String.format(newPeople, id))
+				.contentType(MediaTypesWithVersion.PEOPLE_V1_JSON_MEDIATYPE)).andDo(print()).andExpect(status().isBadRequest())
+				.andExpect(content().contentTypeCompatibleWith(MediaTypesWithVersion.ERROR_JSON_MEDIATYPE))
+				.andExpect(content().json(String.format(RESPONSE_ERROR_BODY, id)));
 	}
 
 	@Test

@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
+import de.bst.example.api.ImmutableVndError;
 import de.bst.example.api.MediaTypesWithVersion;
 import de.bst.example.api.People;
 import de.bst.example.service.NotFoundException;
@@ -43,9 +44,16 @@ public class PeopleRest {
 
 	@PostMapping(value = URL_PEOPLE, consumes = MediaTypesWithVersion.PEOPLE_V1_JSON_MEDIATYPE)
 	public ResponseEntity<?> peoplePost(@Valid @RequestBody People people, BindingResult bindingResult) {
-		System.out.println(bindingResult);
 		if (bindingResult.hasErrors()) {
-			return ResponseEntity.badRequest().header(HttpHeaders.CONTENT_TYPE, MediaTypesWithVersion.ERROR_JSON_MEDIATYPE).build();
+			System.out.println(bindingResult.getAllErrors());
+			if (bindingResult.getAllErrors().size() == 1) {
+				return ResponseEntity.badRequest().header(HttpHeaders.CONTENT_TYPE, MediaTypesWithVersion.ERROR_JSON_MEDIATYPE)
+						.body(ImmutableVndError.builder().logref(people.getId())
+								.message(bindingResult.getAllErrors().get(0).getDefaultMessage().replaceAll("\"", "'")).path(URL_PEOPLE)
+								.build());
+			} else {
+				return ResponseEntity.badRequest().header(HttpHeaders.CONTENT_TYPE, MediaTypesWithVersion.ERROR_JSON_MEDIATYPE).build();
+			}
 		} else {
 			peopleService.add(people);
 			return ResponseEntity.created(URI.create(URL_PEOPLE_W_ID.replace("{id}", people.getId()))).build();
