@@ -1,5 +1,7 @@
 package de.bst.example.rest;
 
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.doThrow;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
@@ -38,6 +40,7 @@ import de.bst.example.service.PeopleService;
 public class PeopleRestPostMockMvcTest {
 
 	//@// @formatter:off
+	private static final String RESPONSE_EXCEPTION_BODY = "{\"message\":\"%s\"}";
 	private static final String RESPONSE_ERROR_BODY = "{"
 				+ "\"message\":\"%s\","
 				+ "\"path\":\"/people\","
@@ -181,6 +184,20 @@ public class PeopleRestPostMockMvcTest {
 		// When - Then
 		mockMvc.perform(post(PeopleRest.URL_PEOPLE).with(httpBasic("user", "password")).content(String.format(newPeople, id))
 				.contentType(MediaType.APPLICATION_JSON)).andExpect(status().isUnsupportedMediaType());
+	}
+
+	@Test
+	public void test_post_people_http_500_on_runtimeexception() throws Exception {
+		// Given
+		final String id = UUID.randomUUID().toString();
+		final String newPeople = "{\"id\":\"%s\",\"age\":100,\"name\":\"Bastian\"}";
+		doThrow(new RuntimeException("Hard error!")).when(peopleService).add(any());
+
+		// When - Then
+		mockMvc.perform(post(PeopleRest.URL_PEOPLE).with(httpBasic("user", "password")).content(String.format(newPeople, id))
+				.contentType(MediaTypesWithVersion.PEOPLE_V1_JSON_MEDIATYPE)).andExpect(status().isInternalServerError())
+				.andExpect(content().contentTypeCompatibleWith(MediaTypesWithVersion.ERROR_JSON_MEDIATYPE))
+				.andExpect(content().json(String.format(RESPONSE_EXCEPTION_BODY, "RuntimeException: Hard error!")));
 	}
 
 	private String errorJsonName(String id) {
