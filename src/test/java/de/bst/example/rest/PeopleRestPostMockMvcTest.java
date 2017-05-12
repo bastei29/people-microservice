@@ -1,5 +1,6 @@
 package de.bst.example.rest;
 
+import static org.hamcrest.matcher.RegexMatcher.matchesRegex;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.doThrow;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
@@ -83,16 +84,16 @@ public class PeopleRestPostMockMvcTest {
 	public void test_post_people_http_201() throws Exception {
 		// Given
 		final String id = UUID.randomUUID().toString();
-		final String newPeople = "{\"id\":\"%s\",\"name\":\"Neuer\",\"age\":1}";
+		final String newPeople = "{\"name\":\"Neuer\",\"age\":1}";
 
 		// When - Then
 		mockMvc.perform(post(PeopleRest.URL_PEOPLE).with(httpBasic("user", "password")).content(String.format(newPeople, id))
-				.contentType(MediaTypesWithVersion.PEOPLE_V1_JSON_MEDIATYPE)).andExpect(status().isCreated())
-				.andExpect(header().string("Location", PeopleRest.URL_PEOPLE_W_ID.replace("{id}", id)))
+				.contentType(MediaTypesWithVersion.PEOPLE_V1_JSON_MEDIATYPE))
+				.andExpect(status().isCreated())
+				.andExpect(
+						header().string("Location", matchesRegex("^/people/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$")))
 				.andDo(document("people-post-v1",
 						requestFields(
-								fieldWithPath("id").description("The id of the people")
-										.attributes(key("constraints").value(description.descriptionsForProperty("id"))),
 								fieldWithPath("name").description("The name of the people")
 										.attributes(key("constraints").value(description.descriptionsForProperty("name"))),
 								fieldWithPath("age").description("The age of the people")
