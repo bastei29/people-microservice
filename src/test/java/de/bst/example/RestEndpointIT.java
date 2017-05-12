@@ -49,6 +49,6 @@ public class RestEndpointIT {
 
 	@Test
 	public void test_api_doc_endpoint_get_200() {
-		given().auth().basic("user", "password").when().get("/api.html").then().statusCode(200).contentType(MediaType.TEXT_HTML_VALUE);
+		given().when().get("/api.html").then().statusCode(200).contentType(MediaType.TEXT_HTML_VALUE);
 	}
 }
