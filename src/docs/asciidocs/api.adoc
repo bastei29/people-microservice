@@ -69,6 +69,10 @@ People-service tries to adhere as closely as possible to standard HTTP and REST 
 | The content-type of the request data could not be matched on the resource.
 |===
 
+[[overview-http-status-codes-vnd-error]]
+=== Error handling
+All internal server error (500) and all validation / bad request errors will be confirmed with a response of content-type application/vnd.error+json and the corresponding response body. For further information regarding the structure and the concept have a look at https://github.com/blongden/vnd.error.
+
 [[resources-people]]
 == Resource People
 The People resource is used to create, modify and list people.
