@@ -21,30 +21,30 @@ public class RestEndpointIT {
 
 	@Test
 	public void test_people_endpoint_get() {
-		given().auth().basic("user", "password").when().get("/people/abc-123").then().statusCode(404);
+		given().auth().basic("user", "prod").when().get("/people/abc-123").then().statusCode(404);
 	}
 
 	@Test
 	public void test_people_endpoint_post_201() {
 		final String id = UUID.randomUUID().toString();
-		given().auth().basic("user", "password").request().contentType(MediaTypesWithVersion.PEOPLE_V1_JSON_MEDIATYPE)
+		given().auth().basic("user", "prod").request().contentType(MediaTypesWithVersion.PEOPLE_V1_JSON_MEDIATYPE)
 				.body(ImmutablePeople.builder().id(id).name("Test").age(10L).build()).when().post("/people").then().statusCode(201)
 				.header("location", is(equalTo("/people/" + id)));
 	}
 
 	@Test
 	public void test_info_endpoint_get_200() {
-		given().auth().basic("user", "password").when().get("/info").then().statusCode(200);
+		given().auth().basic("user", "prod").when().get("/info").then().statusCode(200);
 	}
 
 	@Test
 	public void test_health_endpoint_get_200() {
-		given().auth().basic("user", "password").when().get("/health").then().statusCode(200);
+		given().auth().basic("user", "prod").when().get("/health").then().statusCode(200);
 	}
 
 	@Test
 	public void test_metrics_endpoint_get_200() {
-		given().auth().basic("user", "password").when().get("/metrics").then().statusCode(200);
+		given().auth().basic("user", "prod").when().get("/metrics").then().statusCode(200);
 	}
 
 	@Test

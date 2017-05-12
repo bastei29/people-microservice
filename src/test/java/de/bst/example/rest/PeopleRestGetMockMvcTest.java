@@ -4,7 +4,6 @@ import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.docu
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -23,6 +22,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.JUnitRestDocumentation;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
@@ -66,11 +66,11 @@ public class PeopleRestGetMockMvcTest {
 	}
 
 	@Test
+	@WithMockUser
 	public void test_get_json_people_http_200() throws Exception {
 		// When - Then
-		mockMvc.perform(get(PeopleRest.URL_PEOPLE_W_ID, ID).with(httpBasic("user", "password"))
-				.accept(MediaTypesWithVersion.PEOPLE_V1_JSON_MEDIATYPE)).andExpect(status().isOk())
-				.andExpect(content().contentTypeCompatibleWith(MediaTypesWithVersion.PEOPLE_V1_JSON_MEDIATYPE))
+		mockMvc.perform(get(PeopleRest.URL_PEOPLE_W_ID, ID).accept(MediaTypesWithVersion.PEOPLE_V1_JSON_MEDIATYPE))
+				.andExpect(status().isOk()).andExpect(content().contentTypeCompatibleWith(MediaTypesWithVersion.PEOPLE_V1_JSON_MEDIATYPE))
 				.andExpect(content().json("{\"name\":\"Bastian\",\"age\":11,\"id\":\"" + ID + "\"}", false))
 				.andDo(document("people-get-json-v1",
 						responseFields(fieldWithPath("id").description("The id of the people"),
@@ -80,10 +80,11 @@ public class PeopleRestGetMockMvcTest {
 	}
 
 	@Test
+	@WithMockUser
 	public void test_get_json_people_http_404() throws Exception {
 		// When - Then
-		mockMvc.perform(get(PeopleRest.URL_PEOPLE_W_ID, ID_NOT_FOUND).with(httpBasic("user", "password"))
-				.accept(MediaTypesWithVersion.PEOPLE_V1_JSON_MEDIATYPE)).andExpect(status().isNotFound());
+		mockMvc.perform(get(PeopleRest.URL_PEOPLE_W_ID, ID_NOT_FOUND).accept(MediaTypesWithVersion.PEOPLE_V1_JSON_MEDIATYPE))
+				.andExpect(status().isNotFound());
 	}
 
 	@Test
@@ -93,17 +94,18 @@ public class PeopleRestGetMockMvcTest {
 	}
 
 	@Test
+	@WithMockUser
 	public void test_get_json_people_http_406() throws Exception {
 		// When - Then
-		mockMvc.perform(
-				get(PeopleRest.URL_PEOPLE_W_ID, ID_NOT_FOUND).with(httpBasic("user", "password")).accept(MediaType.APPLICATION_JSON))
+		mockMvc.perform(get(PeopleRest.URL_PEOPLE_W_ID, ID_NOT_FOUND).accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isNotAcceptable());
 	}
 
 	@Test
+	@WithMockUser
 	public void test_get_atom_people_http_200() throws Exception {
 		// When - Then
-		mockMvc.perform(get(PeopleRest.URL_PEOPLE).with(httpBasic("user", "password")).accept(MediaType.APPLICATION_ATOM_XML))
-				.andExpect(status().isOk()).andExpect(content().contentType(MediaType.APPLICATION_ATOM_XML));
+		mockMvc.perform(get(PeopleRest.URL_PEOPLE).accept(MediaType.APPLICATION_ATOM_XML)).andExpect(status().isOk())
+				.andExpect(content().contentType(MediaType.APPLICATION_ATOM_XML));
 	}
 }

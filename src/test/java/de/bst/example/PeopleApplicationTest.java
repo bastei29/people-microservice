@@ -34,7 +34,7 @@ public class PeopleApplicationTest {
 	private TestRestTemplate restTemplate;
 
 	@Before
-	public void init() {
+	public void init() throws Exception {
 		this.restTemplate = this.restTemplate.withBasicAuth("user", "password");
 	}
 

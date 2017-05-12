@@ -1,11 +1,16 @@
 # people-microservice
 A microservice to play around with some new frameworks and features
 
+## authentication
+The http basic auth credential is username "user" with password "prod"
+
+api.html can be accessed as anonymous, everything else needs a successful basic auth.
+
 ## documentation
 The current documentation can be found under /api.html if the microservice is running
 
 Example:
-http://localhost:8080/api.html
+http://${hostname}:8080/api.html
 
 ## configuration
 Mandatory configurations to run the project
@@ -25,8 +30,10 @@ The entry looks like this:
 </server>
 ```
 
+Username and password for the registry can be found inside the wiki on the 'dockerhost' site
+
 ### hosts file
-To be able to push to the registry by hostname 'dockerhost' you have to modify the hosts file from your os otherwise you will receive an error because the fabric8 plugin in combination with windows docker is not able to resolve the hostname via dns. 
+To be able to push to the registry with hostname 'dockerhost' you have to modify the hosts file from your os otherwise you will receive an error because the fabric8 plugin in combination with windows docker is not able to resolve the hostname via dns. 
 
 The entry looks like this:
 
