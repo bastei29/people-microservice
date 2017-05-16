@@ -77,6 +77,10 @@ All internal server error (500) and all validation / bad request errors will be 
 == Resource People
 The People resource is used to create, modify and list people.
 
+[[resources-people-auth]]
+=== Authentication
+The service is secured with http basic auth and access will be granted with "user" and password "prod".
+
 [[resources-people-get]]
 === GET
 
