@@ -162,16 +162,6 @@
 				</configuration>
 			</plugin>
 			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-failsafe-plugin</artifactId>
-				<configuration>
-					<includes>
-						<include>**/*IT.java</include>
-					</includes>
-					<argLine>-Dcontainer.port=@{container.port}</argLine>
-				</configuration>
-			</plugin>
-			<plugin>
 				<groupId>org.asciidoctor</groupId>
 				<artifactId>asciidoctor-maven-plugin</artifactId>
 				<version>1.5.5</version>
@@ -191,63 +181,6 @@
 							<sourceDirectory>src/docs/asciidocs</sourceDirectory>
 							<outputDirectory>target/classes/static</outputDirectory>
 						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>io.fabric8</groupId>
-				<artifactId>docker-maven-plugin</artifactId>
-				<version>0.20.1</version>
-				<configuration>
-					<registry>dockerhost:8082</registry>
-					<images>
-						<image>
-							<name>dockerhost:8082/${project.artifactId}:${project.version}</name>
-							<build>
-								<dockerFile>Dockerfile</dockerFile>
-								<assembly>
-									<descriptorRef>artifact</descriptorRef>
-								</assembly>
-							</build>
-							<run>
-								<ports>
-									<port>container.port:8080</port>
-								</ports>
-								<wait>
-									<http>
-										<url>http://localhost:${container.port}/people</url>
-										<method>GET</method>
-										<status>401</status>
-									</http>
-									<time>60000</time>
-								</wait>
-							</run>
-						</image>
-					</images>
-				</configuration>
-				<executions>
-					<execution>
-						<id>start</id>
-						<phase>pre-integration-test</phase>
-						<goals>
-							<goal>build</goal>
-							<goal>start</goal>
-						</goals>
-					</execution>
-					<execution>
-						<id>stop</id>
-						<phase>post-integration-test</phase>
-						<goals>
-							<goal>stop</goal>
-							<goal>remove</goal>
-						</goals>
-					</execution>
-					<execution>
-						<id>push</id>
-						<phase>verify</phase>
-						<goals>
-							<goal>push</goal>
-						</goals>
 					</execution>
 				</executions>
 			</plugin>
