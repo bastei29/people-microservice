@@ -199,10 +199,9 @@
 				<artifactId>docker-maven-plugin</artifactId>
 				<version>0.20.1</version>
 				<configuration>
-					<registry>dockerhost:8082</registry>
 					<images>
 						<image>
-							<name>dockerhost:8082/${project.artifactId}:${project.version}</name>
+							<name>${project.artifactId}:latest</name>
 							<build>
 								<dockerFile>Dockerfile</dockerFile>
 								<assembly>
@@ -240,13 +239,6 @@
 						<goals>
 							<goal>stop</goal>
 							<goal>remove</goal>
-						</goals>
-					</execution>
-					<execution>
-						<id>push</id>
-						<phase>verify</phase>
-						<goals>
-							<goal>push</goal>
 						</goals>
 					</execution>
 				</executions>
