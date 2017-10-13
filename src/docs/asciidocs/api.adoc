@@ -1,5 +1,5 @@
-= People Service 
-Bastian Steinbach;
+= CDI People Service (Make CDI great again)
+Bastian Steinbach, Lukas Pradel;
 :doctype: book
 :icons: font
 :source-highlighter: highlightjs
