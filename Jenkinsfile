@@ -27,4 +27,3 @@ def pomArtifactId() {
     matcher ? matcher[0][1] : null
 }
 
-
